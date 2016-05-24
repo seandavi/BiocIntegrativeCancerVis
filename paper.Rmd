@@ -2,18 +2,19 @@
 title: "Integrative visualization of TCGA public data with R/Bioconductor Packages"
 author: "Hongen Zhang and Sean Davis"
 output:
-  pdf_document: 
+  - pdf_document: 
     fig_caption: true
     keep_tex: true
+  - html_document
 bibliography: citations.bib
 
 ---
 
-Abstract
+# Abstract
 
 Translational researches of cancers are generating high dimensional data set. Integrated visualization of multi-dimensional genomic data has great help for understanding the biological complexity and heterogeneity of genomic alterations during the cancer development and progression. In this manuscript, we described the workflow of downloading open-access data set from TCGA database and integrated visualization of multi-dimensional genomic data with RCircos, gtrellis, ComplexHeatmap, and caOmicsV packages.
 
-Introduction
+# Introduction
 
 Most human cancers are complex and heterogeneity diseases. In order to describe and understand the biological complexity and heterogeneity of genomic alterations during the cancer development and progression, current translational research of cancers are generating high dimensional data such as gene and miRNA expression from RNAseq and miRNAseq, DNA methylation from microarray assay or methylation sequencing, single nucleotide polymorphism (SNP), copy number variation (CNV) and mutation from whole genome sequencing and whole exome sequencing [@Wang2016-sz]. Analyzing genomic alterations at multi-dimensional level have greatly facilitated not only in understanding the mechanism of cancer development and progression but also in the clinical applications of genomic information in diagnosis, prognosis and therapeutics of cancers [2-10]. To present the analysis results by means of displaying and describing the genomic variation patterns and relationship between genomic alterations and clinical features or between different genomic variations, integrated visualization tools have essential and important roles [11-13].
 
@@ -21,19 +22,19 @@ Due to the complex of variations, high dimensions and large sample size in datas
 
 The Cancer Genome Atlas (TCGA) project, one of the most ambitious and successful cancer genomics programs to date, provides clinical, mutation, SNP/copy number variation, methylation, RNAseq and miRNAseq data for samples from more than 11,000 patients across 33 tumor types and serves as a best model of genomic alteration data [1]. Currently, public available TCGA data sets are at summarized level and could be used as an example of workflow for displaying summarized genomic research outputs. In this manuscript we will use the TCGA liver heptocellular carcinoma (LIHC) data sets since it provides paired tumor/normal samples in each data set.
 
-Data and Methods
+# Data and Methods
 
-Data Downloading and Preparation with TCGAbiolinks Package
+## Data Downloading and Preparation with TCGAbiolinks Package
 
 There are few R/Bioconductor packages (TCGAbiolinks [18],RTCGAandRTCGAToolbox [19], and TCGA2STAT [20]) for downloading data from TCGA database. Here we choose TCGAbiolinks package since we will need data with paired tumor/normal samples only. TCGAbiolinks can download all original open-access data set and is more flexible in sample filtering. Also all required functions are available when this manuscript was written.
 
 There are three steps to download TCGA datasets with TCGAbiolinks package:
 
-1. 1)Search TCGA open-access data from TCGA database with TCGAquery(),
-2. 2)Download open-access datawith TCGAdownload(),
-3. 3)Prepare the data for other package use with TCGCprepare().
+1. Search TCGA open-access data from TCGA database with TCGAquery(),
+2. Download open-access datawith TCGAdownload(),
+3. Prepare the data for other package use with TCGCprepare().
 
-Search TCGA Open-access Data from TCGA Database with TCGAquery()
+### Search TCGA Open-access Data from TCGA Database with TCGAquery()
 
 All required information for downloading genomic data (RNAseq, miRNAseq, methylation, mutation, SNP/CNV) from TCGA database can be retrieved with TCGAquery(). The key arguments for TCGAquery are tumor type and platform, both of them can be found in the help documents. Another argument is data level and it is always 3 for open-access data set except of that for mutation data which is 2 at the time of this manuscript written.
 
@@ -41,7 +42,7 @@ Object returned by TCGAquery() function is a data frame with 12 columns for info
 
 Different from genomic data, clinical data are directly downloaded with TCGAquery\_clinic() with arguments of tumor, clinical\_data\_type and an optional list of samples. The function will return a data frame with clinical information for all or part of patient samples.
 
-Download Open-access Data with TCGAdownload()
+### Download Open-access Data with TCGAdownload()
 
 Once the query is successful, data files can be download with TCGAdownload() function with the output of TCGAquery(). Besides of the output of TCGAquery(). Another key argument for TCGAdownlod() is the type of data files. Unfortunately, TCGAbiolinks documentation doe not list all file types and users may need play around on TAGA data portal to get required information.
 
@@ -49,21 +50,21 @@ Prepare the Data for Other Package Use with TCGAprepare()
 
 TCGAdownlodd() will get compressed file (\*tar.gz) and un-compress it. To make the data useful for downstream analysis, TCGAprepare() will automatically generate a data frame with columns for samples and rows for genes. Key arguments for TCGAprepare() are same as TCGAdownload().
 
-Download TCGA LIHC data with TCGAbiolinks package
+### Download TCGA LIHC data with TCGAbiolinks package
 
 For this manuscript, we will download paired tumor/normal samples from TCGA LIHC dataset and this is done with two steps:
 
-1. 1)Prepare a list of paired tumor/normal samples which are included in all genomic alteration data sets of TCGA LIHC samples.
+1. Prepare a list of paired tumor/normal samples which are included in all genomic alteration data sets of TCGA LIHC samples.
 
 First we query clinical information and get all samples that have both tumor and normal tissues then make query for each type of genomic data to get sample list for each data set. Each object returned by TCGAquery() call contains sample barcodes for relevant data set and we use the barcodes in each query to filter the paired tumor/normal samples extracted from clinical query. After filtering with all data sets, final list of barcodes contains 28 pairs of tumor/normal samples.
 
-1. 2)Download data files and prepare data table for further processing. To download a data set, simply call TCGAdownload() with correct arguments included the sample list extracted in above step. Once the data download finished, call TCGAprepare() to compile data in data frame format with rows for genes and columns for samples for later use. Please note RNAseq and miRNAseq data from TAGAprepare() contains both raw counts and normalized counts. Also the mutation is in one file with maf format and SNP/CNV data is segment based (genomic axis of each segment varies in different sample), extra procedures areneed to covert them to different format for plotting later. The script for downloading data files and preparing data tables for future processing is available in supplement file 1.
+1. Download data files and prepare data table for further processing. To download a data set, simply call TCGAdownload() with correct arguments included the sample list extracted in above step. Once the data download finished, call TCGAprepare() to compile data in data frame format with rows for genes and columns for samples for later use. Please note RNAseq and miRNAseq data from TAGAprepare() contains both raw counts and normalized counts. Also the mutation is in one file with maf format and SNP/CNV data is segment based (genomic axis of each segment varies in different sample), extra procedures areneed to covert them to different format for plotting later. The script for downloading data files and preparing data tables for future processing is available in supplement file 1.
 
-Gene Annotation with biomRt Package
+### Gene Annotation with biomRt Package
 
 The RNAseq and miRNAseq data of TCGA LIHC samples do not contain annotation information and we need add genomic coordinate information to them. We simply use Bioconductor biomaRt package [21, 22] to get annotation information for genes and miRNAs as shown in supplement file 2.
 
-Differential Expression Analysis of RNAseq Data
+### Differential Expression Analysis of RNAseq Data
 
 Since non-significant differentially expressed genes are non-informative, we will focus on the significant differentially expressed genes and relevant genomic alterations in same gene set. To get list of genes with significant differentially expressed between tumor and normal tissues, we performed linear fit modeling with edgeR and limma pacakges [23-26] on TCGA LIHC RNAseq data. The scripts used for normalization [27, 28] and PCA plot [29, 30] are included in supplement file 3 and 4.
 
@@ -71,7 +72,7 @@ Figure 1 shows PCA results generated with RNAseq, miRNA and mutation data. All t
 
 Figure 1 PCA plot with RNAseq, miRANseq, and methylation dataof TCGA LIHC samples
 
-Preparation of Visualization Data Sets
+## Preparation of Visualization Data Sets
 
 In general, integrated visualization of genomic alterations only concentrated on subset of genomic data. For example, most non-significant differentially expressed genes and miRNAs are non-informative and visualization of these genes/miRNAs may not make any sense, Mutations and copy number variation may occur only in some genes/DNA segments or in few samples only and in these cases visualizing all genes may be non-necessary. In this manuscript, we will focus on most significant differentially expressed (DE) genes, miRNA expression that are most negative correlated to the DE genes, and methylation, copy number variation or mutation associated with DE genes. So we will extract subsets of TCGA LIHC genomic alteration data with genomic coordinate information attached to each gene. The subsets will include:
 
@@ -93,11 +94,11 @@ Integrated Visualization of TCGA LIHC Data
 
 Integrated visualization of genomic alteration data aims to display the data that has multi-dimensions and includes multiple samples. The four packages used in this manuscript (RCircos, ComplexHeatmap, gtrellis and caOmicsV) are all featured in presenting multi-dimensional and multiple sample data but in different ways and with different input requirements. Here we will briefly describe the usage, input data format, and plot procedures for each package.
 
-RCircos Plot
+## RCircos Plot
 
 CIRCOS plot is broadly used to present genomic alteration patterns (similarities, differences and relationship) between different samples or between different type of genomic variations through heatmap, bar, polygon, points, lines or link line plots [31]. CIRCOS plot can display multi-type of genomic alterations for whole or part of genome but only limited samples and limited genes can be presented. There are several implementations for CIRCOS plot in R or Bioconductor packages [14, 32-34]. In this manuscript, we are focusing on RCirocs package only.
 
-Input data
+### Input data
 
 RCircos requires the input data in data frames and all data sets must have genomic coordinate information in the first three columns for chromosome name, start position and end position for each gene or genomic interval. There are three types of data frames for different plots:
 
@@ -107,7 +108,7 @@ RCircos requires the input data in data frames and all data sets must have genom
 
 Besides of genomic variation data, chromosome ideogram data must be provided. The ideogram data could be standard cytoband information or a psudo-ideogram. In each case, it should have five columns for chromosome name, start and end position for each chromosome or cytoband, chromosome/band name, and colors for each chromosome/cytoband.
 
-Plot procedures
+### Plot procedures
 
 1. 1)Prepare data in correct forms required by RCircos: This step includes extract data from whole data set and add genomic coordinate information if it is not provided in original data set.  In this manuscript we will show the patterns of most significant differentially expressed genes (from RNAseq), miRNA (from miRNAseq), and DNA methylation of relevant genes between tumor group and normal group, and few linkages between three miRNAs and their most negative correlated genes. To have a better resolution, we only plot genes with more than 3 fold changes in either over- or down-regulated in tumors, and the relevant miRNA and DNA methylation. Supplement file 6 shows the details to select the differentially expressed (DE) genes (from RNAseq data) and miRNAs, methylation levels of the DE genes and few examples of links between miRNA and genes most negatively correlated to those miRNAs.
 2. 2)Initialize core components by call RCircos.Set.Core.Components() with chromosome ideogram data, chromosome to be excluded from plot, and how many tracks will be plotted inside and outside of chromosome ideogram as below:
@@ -120,43 +121,43 @@ call RCircos.Set.Plot.Area() to set up plot area then call relevant plot functio
 
 Figure 2 RCircos plot of TCGA LIHC samples. 2A: mean expression values of gene and methylation levels of the genes that are most significant differentially expressed between liver HCC and normal tissues, and links between three miRNA and their most negatively correlated genes. 2B: expression values of RNAseq, miRNAseq, DNA methylation, copy number variations in one pair of liver HCC and normal tissue.
 
-gtrellis Plot
+## gtrellis Plot
 
 gtrellis package is mainly used to plot genomic data along chromosomes and its advantage is to plot multi-dimensional data to view different genomic alterations for one sample or same genomic alteration data for multiple samples along few or all chromosomes of a genome. It generates Gviz like plot [] but with summarized data. The gtrellis package takes the advantage of trellis package to arrange plot area in grid layout form and display the data on multiple tracks. With gtrellis plot, genomic variations can be displayed as heatmap, scatter/points, polygon, and lines at same genomic coordinates.
 
-Input Data
+### Input Data
 
 The gtrellis plot requires input data held with GenomicRanges object so the original inputs must have genomic information provided including chromosome names, start position and position for each gene/genomic interval. Since we have the genomic coordinate information already added to whole data set, we just need to extract one sample to make gtrellis plot as. Supplement file 8 described the procedures to extract subset of gene (RNAseq), methylation and copy number variation for one sample pair.
 
-Plot Procedures
+### Plot Procedures
 
 Making gtrellis plot contains two main procedures, first initialize the layout then add data plot tracks. The layout could be one row for all or few chromosomes, or multiple rows with same columns. In either case, each column can have same width or different width based on chromosome length. In this manuscript, we arrange the plot as one row to hold all chromosomes and add tracks of copy number variation values as points, gene expression data as heatmap, and methylation levels as polygons. Details of plot procedures are in supplement file 9 and tumor sample and it paired normal tissue are plotted separately with same procedure. The outputs are shown in Figure 3.
 
 Figure 3. gtrellis plot of TCGA LIHC samples. 3A: CNV, gene expression (RNAseq) and gene methylation of tumor sample. 3B: CNV, gene expression (RNAseq) and gene methylation of normal tissue.
 
-ComplexHeatmap Plots
+## ComplexHeatmap Plots
 
 Heatmap plot is a most broadly used tool in displaying the clustering patters of genes and samples in high-throughput data analysis. While there are many R/Bioconcuctor packages improved heatmap plot functionality [30, 35-36], ComplexHeatmap provides a highly flexible and easy way to arrange multiple heatmaps and supports self-defined annotation graphics. Another important usage of ComplexHeatmap is making OncoPrint to show genomic alterations (mutations and copy number variations) and statistics for multiple genes in multiple samples.
 
-Input Data
+### Input Data
 
 ComplexHeatmap plot does not require genomic coordinate information. For heatmap plot, its inputs are simple numeric data matrix with columns names and row names provided and data matrix for heatmap annotation (e.g., sample groups). For OncoPrint it need a matrix with mutation or copy number variation types in text format but rows for samples and columns for genes. Mutation/CNV types in data matrix should be followed by semi-colon for each. Details of data preparation for a heatmap list plot and OncoPrint plot are available in supplement file 10.
 
-Plot Procedures
+### Plot Procedures
 
 Making heatmap plot with ComplexHeatmap package is very straightforward and users only need to pass the plot data and desired arguments such as title, color, dendrogram orders and sizes. Layout parameters such as the one in heatmap.2 plot function in gplots package are no longer needed.  For OncoPrint plot, user will required to customize the function to set colors and size for each mutation/variation type.   In this manuscript we will use ComplexHeatmap package to plot a list of heatmap with group annotation and legend, as well as an OncoPrint graph. Input data include RNAseq data of top 114 most differentially expressed genes and top 114 miRNAs with highest fold change between liver HCC sample and their paired normal tissue, tissue type of each sample, and mutation data in matrix format for genes with mutations in more than 23 samples. Procedures to make heatmap list plot and OncoPrint plot are available in supplement file 11. Plot outputs are shown in Figure 4.
 
 Figure 4 ComplexHeatmap plot of TCGA LIHC data. 4A: heatmap with expression values of top 114 gene and top 114 miRNAs. Sample type annotation is shown under sample cluster dendrogram. The top 114 genes show different expression patterns between HCC and normal tissue but there is no such pattern in top 114 miRNA expression. Suggesting the regulation of gene expression may not correlated to those miRNAs or the regulation of gene expression by miRNA may be complicated. 4B: OncoPrint of mutated genes and their mutation types in TCGA LIHC tumor samples.
 
-caOmicsV plot
+## caOmicsV plot
 
 caOmicsV plot aims to display patterns of multi-dimensional genomic data in multiple samples on one graph [16]. There are two layout formats for caOmicsV plot: bioMatrix layout and bioNetCircos layout. With bioMatrix layout, columns are for samples and rows are for genes. Gene and miRNA expression are plotted as heatmap at same row, methylation levels are plotted as outlines of heatmap cells with different colors. Copy number variations or mutation are plotted as scatters (points) inside of heatmap cells. Sample names, gene names, and miRNA names are labeled at top, left and right of heatmap. In addition, summary data such as mean fold change of each gene between tumor and normal tissues could be plotted as text or bars at the most right of heatmap. On bioNetCircos layout, genes are arranges into a network based on correlation of expression values and each gene will be one node in the network. Each node contains CIRCOS like data tracks: samples are labeled as colored polygons in one track, gene/miRNA expression are plotted as heatmap tracks, methylation levels are displayed as bars/histogram track, and copy number variation and mutation data are presented as scatters (points) in one track.
 
-Plot Data
+### Plot Data
 
 Both caOmicsV layout plots require data frames to hold genomic variation data and genomic coordinate information is not needed. For each data frame, columns are for samples and rows for genes/miRNAs, and the first column are always gene/miRNA names. Gene and miRNA expression values should be log2 transformed. Mutation data needs to be in binary form for each gene and methylation data should be converted to category values for bioMatrix layout or keep it in range from 0 to 1 for bioNetCircos layout plot. Summary data such as mean of fold changes are only needed for bioMatrix layout. All genomic alteration data sets must have sample number of rows and columns with same row and column headers but row names of each data frame could be different. In addition, sample information such as tissue type is required. In our sample below, we will make bioMatrix plot and bioNetCircos plot with top 17 genes (RNAseq) which are most significant differentially expressed between liver HCC and normal tissues, the miRNA that most negatively correlated to the genes, and methylation values, mutation or copy number variation of the genes. Supplement file 12 lists procedures to prepare the data sets for both plots.
 
-Plot Procedures
+### Plot Procedures
 
 For both caOmicsV bioMatrix and bioNetCircos plots, the first step is to setup a data set object to hold all input data. This data object will hold input data with lists of data sets based on plot types. To make the plot more easily, caOmicsV package provides functions to make plot data sets and generate both layout plots with default parameters. The default plot procedures are shown in supplement file 13 and the Figure 5 displays the outputs from default plot methods, and  bioNetCircos layout plot with only four genes for details of relevant nodes.
 
@@ -199,8 +200,7 @@ Han, L., Diao, L., Yu, S., Xu, X., Li, J., Zhang, R., Yang, Y., M.J., H., A, W.,
 
 1. 16.Zhang H, Davis S, Meltzer PS. caOmicsV: an R package for visualizing multidimensional cancer genomic data. BMC Bioinformatics. 2016; 17: 141. doi:  10.1186/s12859-016-0989-6
 
-1.
-# Gu Z, Eils R, Schlesner M:gtrellis: an R/Bioconductor package for making genome-level Trellis graphics. BMC Bioinformatics. 2016; 17: 169. doi: 10.1186/s12859-016-1051-4.
+1. Gu Z, Eils R, Schlesner M:gtrellis: an R/Bioconductor package for making genome-level Trellis graphics. BMC Bioinformatics. 2016; 17: 169. doi: 10.1186/s12859-016-1051-4.
 
 1. 18.Colaprico A, Silva TC, Olsen C, Garofano L, Cava C, Garolini D, Sabedot T, Malta TM, Pagnotta SM, Castiglioni I, Ceccarelli M, Bontempi G and Noushmehr H: TCGAbiolinks: An R/Bioconductor package for integrative analysis of TCGA data.  _Nucleic Acids Research._2015; doi: 10.1093/nar/gkv1507.
 
