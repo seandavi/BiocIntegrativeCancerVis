@@ -1,6 +1,9 @@
---- title: "Integrative visualization of TCGA public data with
-R/Bioconductor Packages" author: "Hongen Zhang and Sean Davis" output:
-html_document bibliography: citations.bib ---
+---
+title: "Integrative visualization of TCGA public data with R and Bioconductor"
+author: "Hongen Zhang and Sean Davis"
+output: html_document
+bibliography: citations.bib
+---
 
 # Abstract
 
@@ -156,7 +159,7 @@ samples.
 
 The RNAseq and miRNAseq data of TCGA LIHC samples do not contain
 annotation information and we need add genomic coordinate information
-to them. We simply use Bioconductor biomaRt package [21, 22] to get
+to them. We simply use Bioconductor biomaRt package [@Durinck2009-ge, @Durinck2005-bm] to get
 annotation information for genes and miRNAs as shown in supplement
 file 2.
 
@@ -167,9 +170,12 @@ non-informative, we will focus on the significant differentially
 expressed genes and relevant genomic alterations in same gene set. To
 get list of genes with significant differentially expressed between
 tumor and normal tissues, we performed linear fit modeling with edgeR
-and limma pacakges [23-26] on TCGA LIHC RNAseq data. The scripts used
-for normalization [27, 28] and PCA plot [29, 30] are included in
-supplement file 3 and 4.
+and limma pacakges
+[@Robinson2010-ja; @McCarthy2012-df; @Robinson2007-zi; @Robinson2008-km]
+on TCGA LIHC RNAseq data. The scripts used for normalization
+[@Zhou2014-aj; @Ritchie2015-hm] and PCA plot
+[@Wickham2009-ab; @Warnes2016-ab] are included in supplement file 3
+and 4.
 
 Figure 1 shows PCA results generated with RNAseq, miRNA and mutation
 data. All three plots show that tumor samples of "TCGA-BC-A10X" and
@@ -222,12 +228,13 @@ usage, input data format, and plot procedures for each package.
 CIRCOS plot is broadly used to present genomic alteration patterns
 (similarities, differences and relationship) between different samples
 or between different type of genomic variations through heatmap, bar,
-polygon, points, lines or link line plots [31]. CIRCOS plot can
-display multi-type of genomic alterations for whole or part of genome
-but only limited samples and limited genes can be presented. There are
-several implementations for CIRCOS plot in R or Bioconductor packages
-[14, 32-34]. In this manuscript, we are focusing on RCirocs package
-only.
+polygon, points, lines or link line plots [@Krzywinski2009-ku]. CIRCOS
+plot can display multi-type of genomic alterations for whole or part
+of genome but only limited samples and limited genes can be
+presented. There are several implementations for CIRCOS plot in R or
+Bioconductor packages
+[@Zhang2013-ul; @Yin2012-hx; @Gu2014-bm; @Hu2014-wf]. In this
+manuscript, we are focusing on RCirocs package only.
 
 ### Input data
 
@@ -237,16 +244,16 @@ chromosome name, start position and end position for each gene or
 genomic interval. There are three types of data frames for different
 plots:
 
-1. 1)Genomic coordinate information with alteration measurements
+1. Genomic coordinate information with alteration measurements
    associated, for example, expression values of gene/miRNA for
    heatmap plot, methylation values of genes for bar/histogram plot,
    and copy number variation of genes or specific genomic interval for
    points or line plot. Names and genomic coordinates of genes for
    gene labeling.
-2. 2)Single genomic coordinate information only in each row. This type
+2. Single genomic coordinate information only in each row. This type
    of data is usually plotted as tiles or points for genomic segments
    without measurement values such as mutation points.
-3. 3)Paired genomic coordinate information in each row. The linkages
+3. Paired genomic coordinate information in each row. The linkages
    between two genomic sites/intervals take this data form and will be
    plotted as link lines or ribbons in the center of plot area.
 
@@ -259,7 +266,7 @@ chromosome/cytoband.
 
 ### Plot procedures
 
-1. 1)Prepare data in correct forms required by RCircos: This step
+1. Prepare data in correct forms required by RCircos: This step
    includes extract data from whole data set and add genomic
    coordinate information if it is not provided in original data set.
    In this manuscript we will show the patterns of most significant
@@ -273,7 +280,7 @@ chromosome/cytoband.
    differentially expressed (DE) genes (from RNAseq data) and miRNAs,
    methylation levels of the DE genes and few examples of links
    between miRNA and genes most negatively correlated to those miRNAs.
-2. 2)Initialize core components by call RCircos.Set.Core.Components()
+2. Initialize core components by call RCircos.Set.Core.Components()
    with chromosome ideogram data, chromosome to be excluded from plot,
    and how many tracks will be plotted inside and outside of
    chromosome ideogram as below:
@@ -364,7 +371,7 @@ expression (RNAseq) and gene methylation of normal tissue.
 Heatmap plot is a most broadly used tool in displaying the clustering
 patters of genes and samples in high-throughput data analysis. While
 there are many R/Bioconcuctor packages improved heatmap plot
-functionality [30, 35-36], ComplexHeatmap provides a highly flexible
+functionality [@Warnes2016-ab; @Hahne2016-nq; @Zhao2015-ab], ComplexHeatmap provides a highly flexible
 and easy way to arrange multiple heatmaps and supports self-defined
 annotation graphics. Another important usage of ComplexHeatmap is
 making OncoPrint to show genomic alterations (mutations and copy
